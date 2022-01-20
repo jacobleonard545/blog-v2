@@ -1,0 +1,132 @@
+import styles from './document.module.css'
+
+<div>
+
+## Overview
+
+This post covers a lot of the basics in passwords and how password cracking can occur.
+I try and keep it simple, but this is mainly used to outline my presentation for the cybersecurity club.
+Enjoy!
+
+## Introduction
+
+It baffles me to this day that the most common passwords really were just
+**password** or **12345** according to the LinkedIn database that was breached in 2012.
+My favorites are the passwords set by Donald Trump and his administration 
+for his Twitter account which were **yourefired** and **maga2020!** 
+which happened to be cracked in 2016 and 2020 respectively (think about 
+why those times may be problematic).
+
+Password security is often taken for granted by many users because
+they often cope by choosing weak, easy to remember passwords as well as reusing old ones. 
+This blog will highlight how passwords are cracked and provide insight on how to 
+set a secure password.
+
+ 
+
+## Hashing
+
+Users send their passwords to a server where it is stored in a database
+and stored as plaintext, but was quickly realized that was
+quite insecure. So hashing became a thing which takes a plaintext
+message and computes a string of the same fixed length no matter how short/long the message. Although more
+secure, two popular attacks on hashing exist: Pre-Image Attacks and Collision Attacks.
+
+A **Pre-Image Attack** is when the attacker is given a specific hash value and attempts
+to find a source message that hashes to that value. It takes approximately 2<sup>n/2</sup>
+attempts where n is the number of bits in the hash digest. A **Collision Attack** is when the attacker finds two separate source messages that both hash
+to the same value. The expected number of times it takes to produce two messages with the same
+hash value is 2<sup>n</sup> where n is the number of bits in the hash digest.
+
+We can see why the hash digest length is important and how hashing algorithms like SHA-1 are
+deemed insecure. Hashing algorithms like SHA-256 are used today which returns a hash value of 256-bits.
+
+
+In addition to choosing a secure hashing algorithm, **salting** was implemented
+which just adds a string to the plaintext password before hashing. 
+Although this can be improved with protocols such as 
+iterative hashing or keyed-hash functions, most companies just use salted hashes.
+
+
+
+## Password Cracking
+
+In Linux Operating Systems, passwords were originally stored
+in plaintext (*sigh*) in `etc/passwd` where it's readable by anyone. To resolve this, the passwords
+were encrypted or hashed in `etc/passwd` but still vulnerable to offline guessing attacks.
+As of today, `etc/passwd` contains usernames and is readable by anyone while `etc/shadow` 
+contains the encrypted or hashed passwords and is readable only by root.
+
+A system administrator may implement annoying rules to ensure everyone's password is secure, but 
+it's better to be safe than sorry.
+In order to check the toughness of a password, they will run some password cracking tools.
+
+### Password Cracking Tools
+
+There are really two attacks when it comes to password cracking: **Brute-Force Attack and Dictionary Attack**.
+If an attacker got their hands on the shadow file which contained the encrypted/hashed passwords,
+then they could use a tool like *John the Ripper* to crack insecure passwords. It's a simple tool that allows for
+dictionary attacks on the shadow file and is dependent on the power of the GPU.
+
+
+To use the default word list (brute-force), run this command:
+```
+$ john shadow-file
+```
+To use a specified word list (dictionary attack), run this command:
+```
+$ john -w=pathname/to/password.lst shadow-file
+```
+There's a bunch of word lists that are available online, but the most popular one is **rockyou.txt** 
+which contains over 14 million passwords. Of course, creating a simple program 
+to permute and combine phrases/numbers to create passwords can be just as effective if you know the victim.
+
+*Burp Suite* is another tool that can be used to test web application security and 
+even brute force a login page. The tool uses a technique to bypass the login by using a 
+simulated login page. Just like *John the Ripper*, a word list can be used to start an attack.
+
+### Phishing
+
+Phishing is the practice of misguiding a victim into entering their confidential credentials through a false
+login page. Although not password cracking, it's still a common method for hackers to steal your password. 
+The best way to recognize a phishing scam is to check things like the URL and authenticity of the sender. A 
+general rule of thumb is to always be cautious when entering your password anywhere and to change it when you 
+suspect that you've fallen victim to one.
+
+## Password Managers
+
+When I first heard about password managers, I was told just about any of them will suffice. Password managers
+will allow users to keep randomly generated passwords of varying length and characters while
+only remembering one password. It's actually normal that people don't know their passwords because their password
+manager does everything for them. We've gone over how attacks can be performed and how length is an important
+variable. Your password should be unique and not anything related to what you've used in the past.
+
+When choosing one, feel free to do some research as they all have their benefits and drawbacks.
+Bitwarden, KeePassXC, 1Password are some of the valid options so it really depends on the user's preference.
+My advice is to experiment and see which one fits your needs the best before committing to one. Be sure
+to check for usability as this is something you will use almost every day.
+
+## How Do I Set A Strong Password?
+
+My advice would be to use a password manager where you'll only need to remember one password. After understanding
+how password cracking works, we can finally assess how to create a secure password. Websites will usually tell you to 
+add special characters and numbers, but that isn't exactly the best thing to tell people in my opinion. When you think about it,
+people will just reuse old passwords and add an exclamation point at the end and deem it secure enough.  
+
+The best (and most realistic) practice when setting a password is to utilize **word combinations**. Think of the most outlandish, out-of-pocket
+combination of words or even sentence and make sure it's at least 15 characters long. To make it even more secure, implement the
+*Bruce Schneier Method* which transforms a sentence using a rule. 
+
+For example, we can use the first two letters of each word in:
+
+***"The Tennessee Volunteers Football Team Will Do Well This Year"***
+
+and make our password this:
+
+***"ThTeVoFoTeWiDoWeThYe" ***
+
+Remember, a sentence so out-of-pocket like this will surely do the trick! But in all seriousness,
+special characters like one exclamation point won't make your password more secure. The combination of words and length are the important
+variables when deciding a password which is how we can both easily remember them and prevent hackers from cracking your password
+
+</div>

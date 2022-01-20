@@ -1,0 +1,19 @@
+.Document h1 {
+  font-family: Montserrat, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-top: 1.7rem;
+  margin-bottom: 2.4rem;  
+  text-rendering: optimizeLegibility;
+}
+
+.Document img {
+  display: flex;
+  margin: auto;
+  object-fit: cover;
+  object-position: 100% 0%;
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+}
