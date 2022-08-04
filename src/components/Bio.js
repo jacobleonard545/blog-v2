@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './Bio.module.css'
 import { getGravatarURL } from '../utils/getGravatarURL'
+import {Link} from "react-navi";
 
 function Bio(props) {
   let photoURL = getGravatarURL({
@@ -16,7 +17,7 @@ function Bio(props) {
       <img src={photoURL} alt="Me" />
       <p>
         Personal blog by {' '}
-        <a href="https://jacobleonard.me/about">Jacob H. Leonard</a>.
+        <Link href="/about">Jacob H. Leonard</Link>
         <br />
         Your favorite blogger's favorite blog.
       </p>
