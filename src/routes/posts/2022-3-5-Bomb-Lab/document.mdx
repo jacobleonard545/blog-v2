@@ -1,0 +1,159 @@
+import styles from './document.module.css'
+
+<div>
+
+## Scenario
+
+The nefarious Dr. Evil has planted a slew of "binary bombs" on our class machines.
+A binary bomb is a... I'm sure you've read the writeup if you're on this page. If you
+have no idea what I'm talking about, the Bomb Lab is a popular reverse-engineering
+lab used by classes that deduct points for every "mistake" the programmer makes. You can
+read a more detailed writeup with a simple Google search.
+
+If you wish to do this on your own, there's a download of the files for this lab
+with the notification server disabled <a href="http://csapp.cs.cmu.edu/public/labs.html">here</a>.
+
+
+## Objectives
+
+We are given a bomb with the task to defuse it. Extract the contents of the tar file
+and we see the following:
+* bomb - The executable binary file
+* bomb.c - Code written in C
+* README
+
+Let's explore *bomb.c* and see what's in there. After scanning the code, it's clear
+that there are six phases with each subsequent phase likely being "saucier".
+
+**GDB**, a GNU debugger, is going to be our best friend when we dissect the binary file so
+find yourself a good cheat sheet.
+
+## Phase 1 - GDB
+
+Here are the commands I used when approaching the first phase:
+
+* `$ strings bomb` - Displays the human-readable strings in the binary file.
+* `$ gdb bomb` - Loads binary file into GDB.
+* `(GDB) $ b phase_1` - Set the breaking point to avoid exploding the bomb.
+* `(GDB) $ run` - Runs the program in GDB.
+* `(GDB) $ disas` - Disassemble; Displays the lines of assembly.
+* `(GDB) $ ni` - Next instruction (good for taking things one step at a time).
+
+Setting breakpoints are crucial for this lab, especially when your grade is on the line.
+After setting breakpoints and putting in a test input; we arrive at `phase_1`.
+
+```
+Breakpoint 1, 0x0000000000400ee0 in phase_1 ()
+(gdb) disas
+Dump of assembler code for function phase_1:
+=> 0x0000000000400ee0 <+0>:	sub    $0x8,%rsp
+   0x0000000000400ee4 <+4>:	mov    $0x402400,%esi
+   0x0000000000400ee9 <+9>:	call   0x401338 <strings_not_equal>
+   0x0000000000400eee <+14>:	   test   %eax,%eax
+   0x0000000000400ef0 <+16>:	   je     0x400ef7 <phase_1+23>
+   0x0000000000400ef2 <+18>:	   call   0x40143a <explode_bomb>
+   0x0000000000400ef7 <+23>:	   add    $0x8,%rsp
+   0x0000000000400efb <+27>:	   ret
+End of assembler dump.
+```
+
+The first thing we notice is the function, `strings_not_equal`. It's safe to
+assume that `phase_1` is checking for a string comparison. Right above that line is a
+mov command to the %esi register... *very interesting*. Let's see what's in there.
+
+Run `(GDB) $ x /20c 0x402400` and we get the following output:
+```
+0x402400:	66 'B'	111 'o'	114 'r'	100 'd'	101 'e'	114 'r'	32 ' '	114 'r'
+0x402408:	101 'e'	108 'l'	97 'a'	116 't'	105 'i'	111 'o'	110 'n'	115 's'
+0x402410:	32 ' '	119 'w'	105 'i'	116 't'
+```
+We received an outlandish string that is likely to be our solution to defusing
+phase 1. In order to find the full string, we can change the number until it reaches the null character or
+check the strings of the binary file to see "Border relations with Canada have never been better."
+
+We can double check and get the following output:
+```
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Border relations with Canada have never been better.
+Phase 1 defused. How about the next one?
+```
+
+## Phase 1 - Ghidra
+
+Modern problems require modern solutions and sometimes that involves making our lives easier.
+GDB is a great tool for learning reverse engineering, but the NSA developed Ghidra which is
+a more modernized version. Let's play around with it.
+
+After installing Ghidra, I dropped the binary file into the application and it quickly analyzed everything.
+The most astonishing part of it all was this piece of code it gave me:
+
+```
+void phase_1(undefined8 param_1)
+
+{
+  int iVar1;
+
+  iVar1 = strings_not_equal(param_1,"Border relations with Canada have never been better.");
+  if (iVar1 != 0) {
+    explode_bomb();
+  }
+  return;
+}
+```
+By uploading the file, I was immediately given the solution to `phase_1`.
+
+## Phase 2 - Ghidra
+
+Alright, let's try it out with `phase_2`. Here's the decompiled code given to me:
+
+```
+void phase_2(undefined8 param_1)
+
+{
+  int *piVar1;
+  int local_38 [6];
+  int local_20 [4];
+
+  read_six_numbers(param_1,local_38);
+  if (local_38[0] != 1) {
+    explode_bomb();
+  }
+  piVar1 = local_38 + 1;
+  do {
+    if (*piVar1 != piVar1[-1] * 2) {
+      explode_bomb();
+    }
+    piVar1 = piVar1 + 1;
+  } while (piVar1 != local_20);
+  return;
+}
+```
+
+There are six numbers and we know the first one must be **1**. A variable is
+assigned the sum of the first number and 1 which would be 2. Then there seems
+to be a formula to calculate the next 5 numbers. The do-while loop seems to check
+if the next number is doubled from the previous, so our solution could be:
+**1 2 4 8 16 32**
+
+Check it and sure enough, we get this output:
+
+```
+Welcome to my fiendish little bomb. You have 6 phases with
+which to blow yourself up. Have a nice day!
+Border relations with Canada have never been better.
+Phase 1 defused. How about the next one?
+1 2 4 8 16 32
+That's number 2.  Keep going!
+```
+
+## Conclusion
+
+I completed this lab entirely with GDB since I was likely to be tested on it in class, but
+Ghidra was a **game changer** to say the least. I highly suggest understanding GDB and even doing as
+much of this lab with it before switching over.
+
+Another interesting part of this lab was how easily we could disable the notification of the bomb
+blowing up by deleting parts of the binary file. Again, I didn't do this but it's certainly something that is possible.
+
+</div>
