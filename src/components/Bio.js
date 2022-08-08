@@ -17,7 +17,7 @@ function Bio(props) {
       <img src={photoURL} alt="Me" />
       <p>
         Personal blog by {' '}
-        <Link href="/about">Jacob H. Leonard</Link>
+        <Link href="/about">Jacob Leonard</Link>
         <br />
         Your favorite blogger's favorite blog.
       </p>
