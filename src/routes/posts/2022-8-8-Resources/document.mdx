@@ -9,7 +9,7 @@ teach various topics throughout the year. Looking back, I was always intrigued b
 never knew where to start. There are members of the club who are also in that position, so I
 figured this would be of help.
 
-## News Sources
+## Sources of Information
 
 You've probably heard it before, but the field is *constantly* changing and finding new ways to exploit
 and defend. It's always good to keep up to date on what's going on in the world, so finding news sources
@@ -21,9 +21,6 @@ Here are some of the sources the board members and I use:
 * <a href="https://mobile.twitter.com/search?q=%23cyebrsecurity"> Twitter - #cybersecurity</a>
 * <a href="https://www.reddit.com/r/cybersecurity/"> Reddit - r/cybersecurity</a>
 * <a href="https://www.cisa.gov/uscert/ncas/alerts">CISA Alerts</a>
-* <a href="https://www.youtube.com/c/LiveOverflow">Youtube - LiveOverfllow</a>
-* <a href="https://www.youtube.com/c/ippsec">Youtube - IppSec (HackTheBox)</a>
-* <a href="https://hackutk.org">HackUTK :)</a>
 
 These are just some to get you started, but there are plenty more.
 
@@ -37,20 +34,64 @@ a great job on a presentation going in-depth to important certifications, but we
 Professor Messer offers Security+ exam training videos on his <a href="https://www.professormesser.com/security-plus/sy0-601/sy0-601-video/sy0-601-comptia-security-plus-course/">website</a>
 and the best part is that they're short, simple, and *free*. I highly recommend checking him out regardless
 if you want to take the exam or not. Many will argue whether or not obtaining this is beneficial
-to your career (as with many others), but I found that the material provides a good foundation to cybersecurity.
+to your career (as with many other certifications), but I found that some of the material provides a good foundation to cybersecurity.
 
 ## Capture the Flag
 
+Capture the Flag (CTF) challenges are a great way to learn and harness valuable skills in the cybersecurity field.
 These are pretty difficult to approach for beginners as most of us are script kiddies.
 Watching YouTube videos and learning the tools (nmap, netcat, etc.) needed to solve some of these can be a great
 addition to your arsenal.
 
+### Environment
+
+Before getting into CTF challenges, I highly suggest learning about **virtual machines** and the **Unix command-line** in particular.
+The Linux community offers an abundance of open-source tools, so familiarizing yourself with these environments will be
+beneficial to your journey. Some popular Linux distros to use are Kali Linux and ParrotOS as both provide an arsenal of tools already
+installed (I've seen some use these as their main operating systems... this is not preferred as they aren't as consistently up to date with
+security standards).
+
+### "Hacking"
+
+Now that we've set up our environment, we can begin taking on CTF challenges. Some are web-based while others
+require you to connect to a machine. Every challenge you encounter will utilize different tools and methods to solve, but they
+all generally follow the same approach:
+
+* Reconnaissance - Gaining information about the target (what kind of server, versions, etc.)
+* Scanning & Enumeration - Identifying hosts on a network and open ports (sometimes making requests to see what's received)
+* Gaining Access - A variety of methods can be used to gain access such as performing a reverse shell.
+* Persistence - Once we're in the system, sometimes we need to maintain that access.
+* Breadcrumbs - Cover up tracks to prevent suspicion.
+
+
+### Tools
+
+As mentioned before, there's no point in reinventing the wheel as many of the tools needed already exist.
+In my experience, the only times I needed to write my own scripts were when I was brute forcing something which
+can be reliant on time (as you progress into tougher challenges, writing your own scripts will be important but I am not there yet).
+Here's a <a href="https://www.reddit.com/r/Pentesting/comments/9ondj5/a_good_pentesting_tools_list/">list</a> of popular tools with
+some I've used often, but googling will always be your best friend when figuring out what to use.
+
+### Platforms
+
+Here's a list of good CTF platforms to begin your journey:
+
+* <a href="https://overthewire.org/wargames/">OverTheWire</a> - A series of levels that get more difficult as you progress.
+* <a href="https://exploit.education/protostar/stack-zero/">Exploit</a> - A series of levels that get more difficult as you progress with walkthroughs.
 * <a href="https://picoctf.org/">PicoCTF</a> - Beginner-friendly challenges with hints.
 * <a href="https://tryhackme.com/">TryHackMe</a> - Beginner-friendly challenges and lessons with walkthroughs.
 * <a href="https://hackthebox.com">HackTheBox</a> - A little more intimidating as you had to solve a challenge
 to make an account, but has made efforts to provide a more beginner-friendly environment.
 
+If you want to get a glimpse of what these look like in action, here's some youtubers I enjoy watching:
+
+* <a href="https://www.youtube.com/channel/UClcE-kVhqyiHCcjYwcpfj9w">LiveOverflow</a>
+* <a href="https://www.youtube.com/c/ippsec">IppSec</a>
+* <a href="https://www.youtube.com/c/JohnHammond010">John Hammond</a>
+
 ## Miscellaneous
+
+Here's a list of miscellaneous practices/resources/things to know:
 
 * <a href="https://www.udemy.com">Udemy</a> - Offers courses on everything you can imagine such as certification training, practice exams, and more.
 * <a href="https://www.cybrary.it">Cybrary</a> - Similar to Udemy and I've heard great things, but never really used it myself.
