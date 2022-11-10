@@ -1,0 +1,93 @@
+import styles from './document.module.css'
+
+<div>
+
+## What Is CyberForce?
+
+**CyberForce** is a cybersecurity competition hosted by the Department of Energy that allow teams to
+defend their infrastructure while being attacked. Teams of 4-6 will have 2-3 weeks to harden their systems and prepare
+for several attacks from the red team on the day of the competition. Alongside that, teams are also expected to
+host a web server with access to users/resources and provide a functional website for the green team. There are also these
+CTF-like challenges known as anomalies which teams can solve throughout the competition day for extra points.
+Teams are graded on their defense, usability, documentation, and anomalies which are
+tallied up on a scoreboard.
+
+For more information, check out their <a href="https://cyberforce.energy.gov/cyberforce-competition/?">website</a>.
+
+## An Overview of the Competition
+
+The first part of the competition was when our team is given access to the virtual network of machines.
+We have used Microsoft Azure in the past, but have recently switched to Amazon Web Services (AWS). These
+are a combination of Linux/Windows machines that serve a purpose and rely on each other to function during
+competition day.
+
+There's also a set of rules/restrictions that dictate what we we're able to do with the machines which
+can be a little intimidating as it could lead to disqualification. Don't worry as it's not that complicated; just
+don't touch certain machines and don't delete any machines (and don't hack other teams).
+
+### Hardening
+As mentioned above, some machines are not allowed to be touched as this is how red team will perform their
+attacks. There are certain machines we will be able to configure (which is great as there's less to worry about)
+and we can focus on those. We had about a week to report any vulnerabilities and how we can mitigate them.
+
+We were also given an extra slot (only one in 2022, but multiple in the past years) to spin up another server which is done on purpose. This
+is where we implemented an **Intrusion Detection System (IDS)** to monitor any activity of the machines. This is a good
+time to research **Security Information and Event Management (SIEM)** and other IDS tools!
+
+### Usability
+We know about the red team, but what about the green team? In addition to implementing an IDS on the extra
+slot, we also had to host our web server on the same machine. We were given a template to follow what the website
+should look like with user information and resources that are fetched from a database. The only things graded
+were pretty much whether the website was accessible to the public and followed the template as given.
+
+### Anomalies
+Anomalies are Capture the Flag (CTF) challenges that actually make up a good portion of the overall score, so this
+part is definitely important. This year, we were given a list of tools needed to solve all of the anomalies so make
+sure those are ready by competition day.
+
+## My Experiences over the Years
+
+It's most definitely on the intense side as far as competitions go, but I found it to be a great experience once
+I understood the premise of everything.
+
+I first did the competition in 2019 when I was still studying to be an electrical engineer (with no
+interest in software), so you can imagine how intimidating is was to be handed all these machines
+with requirements/restrictions and possible disqualification if we did something wrong.
+Not only did I not understand how these machines worked, but I had to secure them as well? Do
+I even have time, let alone the skills/knowledge, to take on this competition? These are all questions
+I had when I first did it and a big reason for writing this post.
+
+As great of opportunities as this competition provides, there are parts where it gets messy. We were given the
+machines really late this year and rules/restrictions were constantly being updated, but that's a taste of
+the real world.
+
+## Run It Back
+
+I will no longer be a student at a University for next year's competition (for now), but
+I would definitely be interested as a volunteer in the future. However,
+here's what I learned over the years:
+
+### Time
+Time is the biggest factor in this competition as there's a lot to do in such a short amount of time.
+It's important that you and your team understand the commitment as this competition requires
+a good amount of time to be allocated for preparation. We are all students with classes and extra-curriculars,
+so it's understandable that this competition may not be the highest priority. I would still encourage those
+to do it even if that's the case.
+
+### Teams
+The two biggest parts of the competition were setting up an IDS with rules that are configured for the
+competition and setting up a live website with user accounts that fetches the correct information. Splitting up the work
+between these two would be ideal to take on this competition.
+
+## Conclusion
+The CyberForce team did a great job overall running this competition and definitely provided
+everyone with a valuable experience. The quality of the competition is improved each year and I know
+they are working harder to provide a better experience for students. The most unique aspect of the
+competition was the feedback our team received from the red team after each of the attacks.
+Oh, and the anomalies were fun as well.
+
+Feel free to reach out if you have any questions/comments about the experience!
+
+
+
+</div>
