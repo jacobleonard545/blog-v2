@@ -1,6 +1,6 @@
 # Blog v2
 
-Personal blog website for whatever intersts me at the moment.
+Personal blog website for whatever interests me at the moment.
 
 Made with create-react-blog.
 
